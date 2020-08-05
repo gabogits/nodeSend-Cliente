@@ -1,209 +1,75 @@
-import Head from 'next/head'
+import React, { useContext, useEffect } from "react";
+import Layout from "../components/Layout";
+import authContext from "../context/auth/authContext";
+import appContext from "../context/app/appContext";
+import Link from "next/link";
+import Dropzone from "../components/Dropzone";
+import Alerta from "../components/Alerta";
 
-export default function Home() {
+const Index = () => {
+  //extraer el usuario autenticado
+
+  const Authcontext = useContext(authContext);
+  const { usuarioAutenticado } = Authcontext;
+
+  //Extraer el mensaje de error
+  const AppContext = useContext(appContext);
+  const { mensaje_archivo, url } = AppContext;
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if(token) {
+      usuarioAutenticado();
+    }
+   
+  }, []);
+
   return (
-    <div className="container">
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className="grid">
-          <a href="https://nextjs.org/docs" className="card">
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className="card"
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="card"
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
+    <Layout>
+      <div className="md:w-4/5 xl:w-3/5 mx-auto mb-32">
+        {url ? (
+          <>
+            <p className="text-center text-2xl mt-10">
+              <span className="font-bold text-red-700 text-3xl uppercase">
+                Tu URL es: 
+              </span>{`${process.env.frontendURL}/enlaces/${url}`} 
             </p>
-          </a>
-        </div>
-      </main>
+            <button
+              type="button"
+              className="bg-red-500 hover:bg-gray-900 w-full p-2 text-white uppercase font-bold mt-10"
+              onClick={()=> navigator.clipboard.writeText(`${process.env.frontendURL}/enlaces/${url}`)}
+            >
+              Copiar Enlace
+            </button>
+          </>
+        ) : (
+          <>
+            {mensaje_archivo && <Alerta />}
+            <div className="lg:flex md:shadow-lg p-5 bg-white rounded-lg py-10">
+              <Dropzone />
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
+              <div className="md:flex-1 mb-3 mx-2 mt-16 lg:mt-0">
+                <h2 className="text-4xl font-sans font-bold text-gray-800 my-4">
+                  Compartir archivos de forma sencilla y privada
+                </h2>
+                <p className="text-lg leading-loose">
+                  <span className="text-red-500 font-bold">ReactNodeSend</span>{" "}
+                  te permite compartir archivos con cifrado de extremo a extremo
+                  y un archivo que es eliminado después de ser descargado. Así
+                  que puedes mantener lo que compartes en privado y asegurarte
+                  de que tus cosas no permanezcan en línea para siempre.
+                </p>
+                <Link href="/crearcuenta">
+                  <a className="text-red-500 font-bold text-lg hover:text-red-700">
+                    Crea una cuenta para mayores beneficios
+                  </a>
+                </Link>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </Layout>
+  );
+};
 
-      <style jsx>{`
-        .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
-        .title a {
-          color: #0070f3;
-          text-decoration: none;
-        }
-
-        .title a:hover,
-        .title a:focus,
-        .title a:active {
-          text-decoration: underline;
-        }
-
-        .title {
-          margin: 0;
-          line-height: 1.15;
-          font-size: 4rem;
-        }
-
-        .title,
-        .description {
-          text-align: center;
-        }
-
-        .description {
-          line-height: 1.5;
-          font-size: 1.5rem;
-        }
-
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-
-        .grid {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-wrap: wrap;
-
-          max-width: 800px;
-          margin-top: 3rem;
-        }
-
-        .card {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
-        }
-
-        .card:hover,
-        .card:focus,
-        .card:active {
-          color: #0070f3;
-          border-color: #0070f3;
-        }
-
-        .card h3 {
-          margin: 0 0 1rem 0;
-          font-size: 1.5rem;
-        }
-
-        .card p {
-          margin: 0;
-          font-size: 1.25rem;
-          line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-            Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-            sans-serif;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
-  )
-}
+export default Index;
